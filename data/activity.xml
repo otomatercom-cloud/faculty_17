@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="mail_activity_faculty_records" model="mail.activity.type">
+        <field name="name">Faculty Records</field>
+        <field name="icon">fa-file-text-o</field>
+        <field name="res_model">faculty.records</field>
+        <field name="delay_count">15</field>
+    </record>
+</odoo>

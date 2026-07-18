@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="logic_faculty_details_form_view" model="ir.ui.view">
+        <field name="name">faculty.details.form</field>
+        <field name="model">faculty.details</field>
+        <field name="arch" type="xml">
+            <form string="Faculty Details">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,hr_approved"/>
+                    <button name="action_approve" type="object" string="HR Approve" invisible="state != 'draft'" class="oe_highlight" groups="faculty_17.group_faculty_hr"/>
+                </header>
+                <sheet>
+                    <div style="width:100%;" class="row align-items-center">
+                        <div class="col-4 col-lg-2" style="text-align-last: center;">
+                            <field name="photo" widget="image" class="oe_left oe_avatar"
+                                   style="margin-right: 30px !important;"/>
+                        </div>
+                        <div class="mb16 col-8 col-lg-10 px-0">
+                            <div class="row">
+
+                                <h2 class="col-12 col-lg-10">
+
+                                    <table>
+                                        <tr>
+                                            <td style="padding-right:10px;">
+                                                <field name="first_name" placeholder="First Name"
+                                                       class="o_form_required"/>
+                                            </td>
+                                            <td style="padding-right:10px;">
+                                                <field name="last_name" placeholder="Last Name"
+                                                       class="o_form_required"/>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+
+                                </h2>
+                            </div>
+
+                            <group>
+                                <group>
+                                    <field name="name" invisible="1"/>
+                                    <field name="mobile" placeholder="Mobile Number" class="o_form_required"/>
+                                    <field name="email" required="1" placeholder="Email Address"
+                                           class="o_form_required"/>
+                                </group>
+                            </group>
+                        </div>
+                    </div>
+
+                    <notebook>
+                        <page name="personal_details" string="Personal Details">
+                            <group>
+                                <group>
+                                    <field name="gender"/>
+                                    <field name="birth_date"/>
+                                    <field name="qualification"/>
+                                    <label for="street" string="Address"/>
+                                    <div name="o_address_format">
+                                        <field name="street" placeholder="Street..."/>
+                                        <field name="street2" placeholder="Street2"/>
+                                        <div class="address_format">
+                                            <field name="city" placeholder="City" style="width: 40%"/>
+                                            <field name="state_id" class="oe_no_button" placeholder="State"
+                                                   style="width: 37%" options="{&quot;no_open&quot;: True}"/>
+                                            <field name="zip" placeholder="ZIP" style="width: 20%"/>
+                                        </div>
+                                        <field name="country_id" placeholder="Country" class="oe_no_button"
+                                               options="{&quot;no_open&quot;: True}"/>
+                                    </div>
+                                </group>
+                            </group>
+
+                        </page>
+                        <page name="bank_details" string="Bank Details" groups="faculty_17.group_faculty_accounts_head,faculty_17.group_faculty_hr,faculty_17.group_faculty_admin">
+                            <group>
+                                <group>
+                                    <field name="bank_name" class="o_form_required"/>
+                                    <field name="account_holder_name"/>
+                                    <field name="account_no" class="o_form_required"/>
+                                    <field name="ifsc_code" class="o_form_required"/>
+                                    <field name="gst_no"/>
+                                    <field name="pan_no"/>
+                                    <field name="aad_no"/>
+                                    <field name="aadhar_card" filename="aadhar_filename" widget="binary"/>
+                                    <field name="pan_card" filename="pan_filename" widget="binary"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="tax_details" string="Tax Details" groups="faculty_17.group_faculty_accounts_head,faculty_17.group_faculty_hr,faculty_17.group_faculty_admin">
+                            <group>
+                                <group>
+                                    <field name="tax_active"/>
+                                    <field name="gst_number" required="tax_active == True"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="logic_faculty_details_tree_view" model="ir.ui.view">
+        <field name="name">faculty.details.list</field>
+        <field name="model">faculty.details</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="mobile"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="logic_faculty_details_action" model="ir.actions.act_window">
+        <field name="name">Faculty Details</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">faculty.details</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!--Menu Item for the model Dashboard Blocks-->
+
+    <menuitem name="Faculty" id="logic_faculty_details_menu"
+              web_icon="faculty_17,static/description/icon.png"
+              sequence="5"/>
+
+    <menuitem name="Faculty Details" id="logic_faculty_details_sub_menu"
+              parent="logic_faculty_details_menu"
+              action="logic_faculty_details_action"
+              sequence="1"/>
+
+    <!--    <menuitem name="Faculty" id="logic_faculty_details_menu"-->
+    <!--              parent="logic_faculty_details_menu"-->
+    <!--              action="logic_faculty_details_action"/>-->
+
+</odoo>

@@ -1,0 +1,7 @@
+.o_form_required .o_input,
+.o_form_required .o_field_widget {
+border: none !important;
+ border-bottom: 1px solid red !important;
+ border-radius: 0 !important;
+ box-shadow: none !important;
+}

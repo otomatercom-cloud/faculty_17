@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="logic_faculty_records_form_view" model="ir.ui.view">
+        <field name="name">faculty.records.form</field>
+        <field name="model">faculty.records</field>
+        <field name="arch" type="xml">
+            <form string="Faculty Records">
+                <style>
+                    .btn-convert {
+                    background-color: #f2290a;
+                    color:white;
+                    }
+                </style>
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,branch_approval,academic_head_approval,accounts_approval,done,paid"/>
+
+                    <button name="act_submit" type="object" string="Submit" invisible="state != 'draft'"
+                            class="oe_highlight"
+                            groups="faculty_17.group_faculty_academic_head,faculty_17.group_faculty_coordinator,faculty_17.group_faculty_branch_head"/>
+
+                    <button name="act_branch_approval" type="object" string="Branch Head Approval"
+                            invisible="state != 'branch_approval'"
+                            class="oe_highlight"
+                            groups="faculty_17.group_faculty_branch_head"/>
+
+                    <button name="act_academic_head_approval" type="object" string="Academic Head Approval"
+                            invisible="state != 'academic_head_approval'"
+                            class="oe_highlight"
+                            groups="faculty_17.group_faculty_academic_head"/>
+
+                    <button name="act_accounts_approval" type="object" string="Accounts Approval"
+                            invisible="state != 'accounts_approval'"
+                            class="oe_highlight"
+                            groups="faculty_17.group_faculty_accounts_team,faculty_17.group_faculty_accounts_head"/>
+
+                    <button name="act_paid" type="object" string="Paid" invisible="state != 'done'"
+                            class="oe_highlight"
+                            groups="faculty_17.group_faculty_accounts_team,faculty_17.group_faculty_accounts_head"/>
+
+                    <button name="act_return_to_draft" string="Return to Draft" type="object"
+                            invisible="state not in ['branch_approval', 'academic_head_approval']"/>
+
+                    <button name="act_reject" type="object" string="Reject"
+                            invisible="state in ['draft','paid','rejected']"
+                            class="btn-convert"/>
+
+                    <button name="action_unlock_record" type="object" string="Unlock Record" class="btn-primary"
+                            groups="faculty_17.group_faculty_admin" invisible="is_unlocked_by_admin == True"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="faculty_id" class="o_form_required" options="{'no_create':True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="month_of_record" class="o_form_required" readonly="state != 'draft'"/>
+                            <field name="year_of_record" class="o_form_required" readonly="state != 'draft'"/>
+                            <field name="is_unlocked_by_admin" groups="faculty_17.group_faculty_admin"/>
+                        </group>
+                        <group>
+                            <field name="branch_id" class="o_form_required" options="{'no_create':True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="branch_head_id" widget="many2one_avatar" class="o_form_required"
+                                   options="{'no_create':True}" readonly="state != 'draft'"/>
+                            <field name="batch_id" class="o_form_required" options="{'no_create':True}"
+                                   context="{'allow_all_batches': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="course_id" class="o_form_required" options="{'no_create':True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="subject_id" class="o_form_required" options="{'no_create':True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="class_records" string="Class Records">
+                            <field name="class_ids" widget="one2many" nolabel="1" readonly="state != 'draft'">
+                                <tree name="classes" string="Class Records" editable="bottom">
+                                    <field name="date" class="o_form_required"/>
+                                    <field name="start_time" widget="float_time" class="o_form_required"/>
+                                    <field name="end_time" widget="float_time" class="o_form_required"/>
+                                    <field name="topic"/>
+                                    <field name="break_reason"/>
+                                    <field name="break_time"/>
+                                    <field name="net_hour" widget="float_time"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="extra_hours" string="Extra Hours"
+                              groups="faculty_17.group_faculty_accounts_team,faculty_17.group_faculty_accounts_head,faculty_17.group_faculty_admin,faculty_17.group_faculty_academic_head"
+                              invisible="extra_hour_active == False">
+                            <group>
+                                <group>
+                                    <field name="extra_hour_active"/>
+                                    <field name="actual_extra_hr"/>
+                                    <field name="extra_hour" widget="float_time"/>
+                                    <field name="extra_hour_reason"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="payment_details" string="Payment Details"
+                              groups="faculty_17.group_faculty_accounts_team,faculty_17.group_faculty_accounts_head,faculty_17.group_faculty_admin,faculty_17.group_faculty_academic_head">
+                            <group>
+                                <group class="oe_subtotal_footer" colspan="2">
+                                    <field name="subject_rate" widget="monetary"/>
+                                    <field name="gross_payable" widget="monetary" string="Taxable Amount"/>
+                                    <field name="extra_hour" string="Extra Hour Eligible for Payment"
+                                           widget="float_time" readonly="1"/>
+                                    <field name="extra_hour_payment" widget="monetary"/>
+                                    <field name="extra_amount_and_gross_amount" widget="monetary"/>
+                                    <field name="gst_amount_added_gross" widget="monetary" string="GST Amount"/>
+                                    <field name="gst_amount" widget="monetary" string="Gross Amount + Gst Amount"/>
+                                    <field name="tds_amount" widget="monetary"/>
+                                    <field name="advance_amount" widget="monetary"/>
+                                    <field name="net_payable" widget="monetary"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="rejected_reason" string="Rejected Details"
+                              invisible="state != 'rejected'">
+                            <group>
+                                <group>
+                                    <field name="rejected_reason" readonly="1"/>
+                                    <field name="rejected_person" readonly="1"/>
+                                    <field name="rejected_date" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                    <group class="oe_subtotal_footer" colspan="2" name="total_amounts">
+                        <field name="total_duration" widget="float_time"/>
+                        <field name="total_this_sub_hrs" widget="float_time" readonly="1"/>
+                        <field name="standard_hours" widget="float_time"/>
+                        <field name="balance_standard_hour" widget="float_time"/>
+                        <field name="net_payable" widget="monetary"
+                               groups="faculty_17.group_faculty_accounts_team,faculty_17.group_faculty_accounts_head,faculty_17.group_faculty_admin,faculty_17.group_faculty_academic_head"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="logic_faculty_records_tree_view" model="ir.ui.view">
+        <field name="name">faculty.records.list</field>
+        <field name="model">faculty.records</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="create_date"/>
+                <field name="faculty_id"/>
+                <field name="branch_id"/>
+                <field name="month_of_record"/>
+                <field name="year_of_record"/>
+                <field name="batch_id"/>
+                <field name="course_id"/>
+                <field name="subject_id"/>
+                <field name="create_uid" widget="many2one_avatar" string="Class Teacher"/>
+                <field name="branch_head_id" widget="many2one_avatar"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'paid'"
+                       decoration-info="state == 'draft'"
+                       decoration-primary="state == 'done'"
+                       decoration-warning="state in ['branch_approval', 'academic_head_approval', 'accounts_approval']"
+                       decoration-danger="state == 'rejected'"
+                       string="Status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="logic_faculty_records_action" model="ir.actions.act_window">
+        <field name="name">Faculty</field>
+        <field name="res_model">faculty.records</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Faculty Records"
+              id="logic_faculty_records_sub_menu"
+              parent="logic_faculty_details_menu"
+              action="logic_faculty_records_action"
+              sequence="2"/>
+</odoo>

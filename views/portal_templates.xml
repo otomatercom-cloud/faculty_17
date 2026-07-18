@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_faculty_create_form" name="Faculty Registration">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container mt-4 mb-5">
+                    <div class="row">
+                        <div class="col-lg-8 offset-lg-2">
+                            <h2 class="mb-4 text-center">Faculty Registration</h2>
+                            <form action="/faculty/registration/submit" method="POST" enctype="multipart/form-data" class="card shadow-sm p-4">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                
+                                <h4 class="mb-3">Personal Details</h4>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="first_name" required="1"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="last_name" required="1"/>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" name="email" required="1"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="mobile" class="form-label">Mobile <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="mobile" required="1"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="gender" class="form-label">Gender</label>
+                                        <select name="gender" class="form-select">
+                                            <option value="">Select Gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="qualification" class="form-label">Qualification</label>
+                                        <input type="text" class="form-control" name="qualification"/>
+                                    </div>
+                                </div>
+
+                                <h4 class="mb-3 mt-4">Bank &amp; Tax Details</h4>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="bank_name" class="form-label">Bank Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="bank_name" required="1"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="account_holder_name" class="form-label">Account Holder Name</label>
+                                        <input type="text" class="form-control" name="account_holder_name"/>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="account_no" class="form-label">Account No. <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="account_no" required="1"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="ifsc_code" class="form-label">IFSC Code <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="ifsc_code" required="1"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="pan_no" class="form-label">PAN No. <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="pan_no" required="1"/>
+                                    </div>
+                                     <div class="col-md-6">
+                                        <label for="aad_no" class="form-label">Aadhar No. <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="aad_no" required="1"/>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="gst_no" class="form-label">GST No.</label>
+                                        <input type="text" class="form-control" name="gst_no"/>
+                                    </div>
+                                </div>
+
+                                <h4 class="mb-3 mt-4">Documents Upload</h4>
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label for="aadhar_card" class="form-label">Aadhar Card <span class="text-danger">*</span></label>
+                                        <input type="file" class="form-control" name="aadhar_card" accept="image/*,application/pdf" required="1"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="pan_card" class="form-label">PAN Card <span class="text-danger">*</span></label>
+                                        <input type="file" class="form-control" name="pan_card" accept="image/*,application/pdf" required="1"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-3">
+                                    <button type="submit" class="btn btn-primary btn-lg px-5">Submit Registration</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_faculty_create_success" name="Registration Successful">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container mt-5 mb-5 text-center">
+                    <div class="card shadow-sm p-5 w-50 mx-auto">
+                        <i class="fa fa-check-circle text-success" style="font-size: 60px;"></i>
+                        <h2 class="mt-4">Thank You!</h2>
+                        <p class="lead mt-3">Your faculty registration has been submitted successfully.</p>
+                        <p>It is currently under review by our HR department.</p>
+                        <a href="/" class="btn btn-primary mt-4">Return to Home</a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="logic_faculty_rates_details_form_view" model="ir.ui.view">
+        <field name="name">faculty.rates.form</field>
+        <field name="model">faculty.rates</field>
+        <field name="arch" type="xml">
+            <form string="Faculty Rates Details">
+                <!--                <header>-->
+                <!--                    <field name="state" widget="statusbar"/>-->
+                <!--                    <button name="act_confirm" type="object" string="Confirm" invisible="state != 'draft'"/>-->
+                <!--                </header>-->
+                <sheet>
+                    <group>
+                        <group name="details">
+                            <field name="faculty_id"/>
+                            <field name="course_id"/>
+                            <field name="subject_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="salary_per_hour" widget="monetary"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="logic_faculty_rates_tree_view" model="ir.ui.view">
+        <field name="name">faculty.rates.list</field>
+        <field name="model">faculty.rates</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="faculty_id"/>
+                <field name="course_id"/>
+                <field name="subject_id"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="salary_per_hour" widget="monetary"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="logic_faculty_rates_action" model="ir.actions.act_window">
+        <field name="name">Faculty Rates</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">faculty.rates</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <!--Menu Item for the model Dashboard Blocks-->
+    <menuitem name="Faculty Rates" id="logic_faculty_rates_sub_menu"
+              parent="logic_faculty_details_menu"
+              action="logic_faculty_rates_action"
+              groups="faculty_17.group_faculty_accounts_team,faculty_17.group_faculty_accounts_head,faculty_17.group_faculty_admin"
+              sequence="4"/>
+
+</odoo>

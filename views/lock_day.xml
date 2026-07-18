@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- views/faculty_lock_config_views.xml -->
+<odoo>
+    <record id="view_faculty_lock_config_tree" model="ir.ui.view">
+        <field name="name">faculty.lock.config.tree</field>
+        <field name="model">faculty.lock.config</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="lock_day"/>
+            </tree>
+
+        </field>
+    </record>
+    <record id="view_faculty_lock_config_form" model="ir.ui.view">
+        <field name="name">faculty.lock.config.form</field>
+        <field name="model">faculty.lock.config</field>
+        <field name="arch" type="xml">
+            <form string="Faculty Lock Configuration">
+                <sheet>
+                    <group>
+                        <field name="lock_day"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_faculty_lock_config" model="ir.actions.act_window">
+        <field name="name">Set Lock Date</field>
+        <field name="res_model">faculty.lock.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="target">current</field>
+    </record>
+
+<!--    <menuitem id="menu_faculty_lock_root" name="Faculty Lock" parent="faculty_17.logic_faculty_details_menu"/>-->
+<!--    <menuitem id="menu_faculty_lock_config" name="Set Lock Date" action="action_faculty_lock_config"-->
+<!--              parent="menu_faculty_lock_root"/>-->
+    <menuitem id="menu_faculty_lock_root"
+          name="Faculty Lock"
+          parent="faculty_17.logic_faculty_details_menu"
+          groups="faculty_17.group_faculty_admin,faculty_17.group_faculty_hr,faculty_17.group_faculty_coordinator"/>
+
+<menuitem id="menu_faculty_lock_config"
+          name="Set Lock Date"
+          parent="menu_faculty_lock_root"
+          action="action_faculty_lock_config"
+          groups="faculty_17.group_faculty_admin,faculty_17.group_faculty_hr"/>
+</odoo>
