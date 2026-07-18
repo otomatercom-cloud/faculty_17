@@ -20,11 +20,12 @@ class FacultyClassRecords(models.Model):
         ('september', 'September'), ('october', 'October'), ('november', 'November'),
         ('december', 'December')],
         string='Month of Record', copy=False,
-        required=True)
+        required=True,
+        default=lambda self: fields.Date.today().strftime('%B').lower())
     currency_id = fields.Many2one('res.currency', string='Currency',
                                   default=lambda self: self.env.user.company_id.currency_id)
     # state = fields.Selection([('draft','Draft'), ('head_approval','Head Approval'), ('accounts_approval','Accounts Approval'),('done','Done'), ('rejected','Rejected'), ('paid','Paid')], string="Status", tracking=1, default='draft')
-    year_of_record = fields.Selection([('2023', '2023'), ('2024', '2024'), ('2025', '2025'), ('2026','2026')], string='Year of Record', default='2025')
+    year_of_record = fields.Selection([('2023', '2023'), ('2024', '2024'), ('2025', '2025'), ('2026','2026')], string='Year of Record', default=lambda self: str(fields.Date.today().year))
     branch_head_id = fields.Many2one('res.users', string="Branch Head", required=1)
     batch_id = fields.Many2one('op.batch', string="Batch", domain="[('branch', '=', branch_id)]", tracking=1)
     course_id = fields.Many2one('op.course', string="Course", tracking=1)
