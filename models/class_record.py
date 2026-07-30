@@ -156,10 +156,10 @@ class FacultyClassRecords(models.Model):
                 if subject:
                     rec.standard_hours = subject.standard_hour
 
-    @api.depends('gst_amount', 'tds_amount', 'advance_amount')
+    @api.depends('gst_amount', 'extra_hour_payment', 'tds_amount', 'advance_amount')
     def _compute_net_payable(self):
         for rec in self:
-            rec.net_payable = rec.gst_amount - rec.tds_amount - rec.advance_amount
+            rec.net_payable = rec.gst_amount + rec.extra_hour_payment - rec.tds_amount - rec.advance_amount
 
     @api.depends('subject_rate', 'total_duration', 'actual_extra_hr')
     def _compute_gross_payable(self):
@@ -177,7 +177,7 @@ class FacultyClassRecords(models.Model):
     def _compute_total_gross_plus_extra_hour_payable(self):
         for rec in self:
             if rec.extra_hour == 0:
-                # rec.net_payable = rec.gross_payable
+                rec.extra_hour_payment = 0.0
                 rec.extra_amount_and_gross_amount = rec.gross_payable
             else:
                 rec.extra_hour_payment = rec.extra_hour * rec.subject_rate
