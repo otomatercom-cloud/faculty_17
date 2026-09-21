@@ -3,6 +3,8 @@ from odoo.exceptions import ValidationError, UserError
 from datetime import date, datetime, time
 import logging
 
+_logger = logging.getLogger(__name__)
+
 
 class FacultyClassRecords(models.Model):
     _name = 'faculty.records'
@@ -72,6 +74,18 @@ class FacultyClassRecords(models.Model):
     def _onchange_batch_id(self):
         if self.batch_id and self.batch_id.course_id:
             self.course_id = self.batch_id.course_id  # Optional: auto-set course
+
+    @api.onchange('course_id')
+    def _onchange_course_id(self):
+        # Restrict the Subject list to subjects that belong to the selected Course,
+        # and drop any previously chosen subject that no longer matches.
+        if self.course_id:
+            if self.subject_id and self.subject_id.course_id != self.course_id:
+                self.subject_id = False
+            return {'domain': {'subject_id': [('course_id', '=', self.course_id.id)]}}
+        else:
+            self.subject_id = False
+            return {'domain': {'subject_id': []}}
 
     @api.depends('standard_hours', 'total_duration', 'batch_id', 'course_id', 'branch_id', 'subject_id')
     def _compute_balance_hours(self):

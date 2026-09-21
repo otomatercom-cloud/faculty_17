@@ -10,6 +10,27 @@
                     background-color: #f2290a;
                     color:white;
                     }
+                    .o_hours_card {
+                    background-color: #f8f9fa;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 6px;
+                    padding: 10px 16px;
+                    min-width: 150px;
+                    text-align: center;
+                    }
+                    .o_hours_card .o_hours_label {
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    letter-spacing: .03em;
+                    color: #6c757d;
+                    display: block;
+                    margin-bottom: 2px;
+                    }
+                    .o_hours_card .o_field_widget input,
+                    .o_hours_card .o_field_widget span {
+                    font-size: 20px;
+                    font-weight: 600;
+                    }
                 </style>
                 <header>
                     <field name="state" widget="statusbar"
@@ -49,15 +70,24 @@
                             groups="faculty_17.group_faculty_admin" invisible="is_unlocked_by_admin == True"/>
                 </header>
                 <sheet>
+                    <widget name="web_ribbon" title="Rejected" bg_color="text-bg-danger"
+                            invisible="state != 'rejected'"/>
+                    <widget name="web_ribbon" title="Paid" bg_color="text-bg-success"
+                            invisible="state != 'paid'"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" readonly="1" nolabel="1"/>
+                        </h1>
+                    </div>
                     <group>
-                        <group>
+                        <group string="Faculty &amp; Period">
                             <field name="faculty_id" class="o_form_required" options="{'no_create':True}"
                                    readonly="state != 'draft'"/>
                             <field name="month_of_record" class="o_form_required" readonly="state != 'draft'"/>
                             <field name="year_of_record" class="o_form_required" readonly="state != 'draft'"/>
                             <field name="is_unlocked_by_admin" groups="faculty_17.group_faculty_admin"/>
                         </group>
-                        <group>
+                        <group string="Branch &amp; Class">
                             <field name="branch_id" class="o_form_required" options="{'no_create':True}"
                                    readonly="state != 'draft'"/>
                             <field name="branch_head_id" widget="many2one_avatar" class="o_form_required"
@@ -68,10 +98,37 @@
                             <field name="course_id" class="o_form_required" options="{'no_create':True}"
                                    readonly="state != 'draft'"/>
                             <field name="subject_id" class="o_form_required" options="{'no_create':True}"
+                                   domain="[('course_id', '=', course_id)]"
+                                   placeholder="Select a course first..."
                                    readonly="state != 'draft'"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
+
+                    <div class="d-flex flex-wrap gap-3 mt-2 mb-3" name="hours_overview">
+                        <div class="o_hours_card">
+                            <span class="o_hours_label">Standard Hours</span>
+                            <field name="standard_hours" widget="float_time" nolabel="1" readonly="1"/>
+                        </div>
+                        <div class="o_hours_card">
+                            <span class="o_hours_label">Hours Used (Subject)</span>
+                            <field name="total_this_sub_hrs" widget="float_time" nolabel="1" readonly="1"/>
+                        </div>
+                        <div class="o_hours_card">
+                            <span class="o_hours_label">Balance Subject Hours</span>
+                            <field name="balance_standard_hour" widget="float_time" nolabel="1" readonly="1"
+                                   class="text-danger" invisible="balance_standard_hour &gt;= 0"/>
+                            <field name="balance_standard_hour" widget="float_time" nolabel="1" readonly="1"
+                                   class="text-success" invisible="balance_standard_hour &lt; 0"/>
+                        </div>
+                        <div class="o_hours_card" invisible="not extra_hour_active"
+                             groups="faculty_17.group_faculty_accounts_team,faculty_17.group_faculty_accounts_head,faculty_17.group_faculty_admin,faculty_17.group_faculty_academic_head">
+                            <span class="o_hours_label">Extra Hours</span>
+                            <field name="actual_extra_hr" widget="float_time" nolabel="1" readonly="1"
+                                   class="text-warning"/>
+                        </div>
+                    </div>
+
                     <notebook>
                         <page name="class_records" string="Class Records">
                             <field name="class_ids" widget="one2many" nolabel="1" readonly="state != 'draft'">
@@ -129,9 +186,6 @@
                     </notebook>
                     <group class="oe_subtotal_footer" colspan="2" name="total_amounts">
                         <field name="total_duration" widget="float_time"/>
-                        <field name="total_this_sub_hrs" widget="float_time" readonly="1"/>
-                        <field name="standard_hours" widget="float_time"/>
-                        <field name="balance_standard_hour" widget="float_time"/>
                         <field name="net_payable" widget="monetary"
                                groups="faculty_17.group_faculty_accounts_team,faculty_17.group_faculty_accounts_head,faculty_17.group_faculty_admin,faculty_17.group_faculty_academic_head"/>
                     </group>
@@ -149,17 +203,22 @@
         <field name="name">faculty.records.list</field>
         <field name="model">faculty.records</field>
         <field name="arch" type="xml">
-            <tree>
-                <field name="create_date"/>
+            <tree decoration-muted="state == 'rejected'">
+                <field name="create_date" optional="hide"/>
                 <field name="faculty_id"/>
                 <field name="branch_id"/>
                 <field name="month_of_record"/>
                 <field name="year_of_record"/>
-                <field name="batch_id"/>
+                <field name="batch_id" optional="hide"/>
                 <field name="course_id"/>
                 <field name="subject_id"/>
-                <field name="create_uid" widget="many2one_avatar" string="Class Teacher"/>
-                <field name="branch_head_id" widget="many2one_avatar"/>
+                <field name="standard_hours" widget="float_time" sum="Standard Hours"/>
+                <field name="total_this_sub_hrs" widget="float_time" string="Used" sum="Used"/>
+                <field name="balance_standard_hour" widget="float_time" string="Balance"
+                       decoration-danger="balance_standard_hour &lt; 0"
+                       decoration-success="balance_standard_hour &gt;= 0"/>
+                <field name="create_uid" widget="many2one_avatar" string="Class Teacher" optional="hide"/>
+                <field name="branch_head_id" widget="many2one_avatar" optional="hide"/>
                 <field name="state" widget="badge"
                        decoration-success="state == 'paid'"
                        decoration-info="state == 'draft'"
