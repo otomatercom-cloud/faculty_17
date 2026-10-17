@@ -87,7 +87,7 @@ class FacultyClassRecords(models.Model):
             self.subject_id = False
             return {'domain': {'subject_id': []}}
 
-    @api.depends('standard_hours', 'total_duration', 'batch_id', 'course_id', 'branch_id', 'subject_id')
+    @api.depends('standard_hours', 'total_duration', 'batch_id', 'course_id', 'branch_id', 'subject_id', 'faculty_id')
     def _compute_balance_hours(self):
         for rec in self:
             rec.balance_standard_hour = rec.standard_hours or 0.0
@@ -104,8 +104,9 @@ class FacultyClassRecords(models.Model):
                 if subject_record and subject_record.active_add_on:
                     opening_hour = subject_record.opening_hour or 0.0
 
-            if rec.batch_id and rec.course_id and rec.branch_id and rec.subject_id:
+            if rec.batch_id and rec.course_id and rec.branch_id and rec.subject_id and rec.faculty_id:
                 domain = [
+                    ('faculty_id', '=', rec.faculty_id.id),
                     ('batch_id', '=', rec.batch_id.id),
                     ('course_id', '=', rec.course_id.id),
                     ('branch_id', '=', rec.branch_id.id),
