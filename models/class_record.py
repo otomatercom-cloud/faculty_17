@@ -94,7 +94,6 @@ class FacultyClassRecords(models.Model):
             rec.total_this_sub_hrs = 0.0
             rec.extra_hour_active = False
             rec.actual_extra_hr = 0.0
-            # rec.extra_hour = 0.0
 
             opening_hour = 0.0
 
@@ -130,6 +129,12 @@ class FacultyClassRecords(models.Model):
                 rec.total_this_sub_hrs - rec.standard_hours
                 if rec.extra_hour_active else 0.0
             )
+            # Extra hour only valid while hours really exceed standard; never above actual extra
+            if not rec.extra_hour_active:
+                if rec.extra_hour:
+                    rec.extra_hour = 0.0
+            elif rec.extra_hour > rec.actual_extra_hr:
+                rec.extra_hour = rec.actual_extra_hr
 
     @api.depends('gross_payable', 'faculty_id.tax_active')
     def _compute_gst_amount(self):
@@ -188,15 +193,16 @@ class FacultyClassRecords(models.Model):
             else:
                 rec.gross_payable = rec.subject_rate * rec.total_duration
 
-    @api.depends('gross_payable', 'extra_hour', 'subject_rate')
+    @api.depends('gross_payable', 'extra_hour', 'subject_rate', 'extra_hour_active', 'actual_extra_hr')
     def _compute_total_gross_plus_extra_hour_payable(self):
         for rec in self:
-            if rec.extra_hour == 0:
+            if not rec.extra_hour_active or rec.extra_hour <= 0:
                 rec.extra_hour_payment = 0.0
                 rec.extra_amount_and_gross_amount = rec.gross_payable
             else:
-                rec.extra_hour_payment = rec.extra_hour * rec.subject_rate
-                rec.extra_amount_and_gross_amount = rec.gross_payable + (rec.extra_hour * rec.subject_rate)
+                eligible = min(rec.extra_hour, rec.actual_extra_hr)
+                rec.extra_hour_payment = eligible * rec.subject_rate
+                rec.extra_amount_and_gross_amount = rec.gross_payable + rec.extra_hour_payment
 
     # def act_submit(self):
     #     today = date.today()
